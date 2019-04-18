@@ -133,25 +133,3 @@ void zanes_main_logic() {
     // attempt to send to putty
     uart_sendStr("\ndistance\tnum_degree\twidth\n");
 }
-
-
-
-//int main(void){
-//    lcd_init();
-//    timer_init();
-//    adc_init();
-//    servo_init();
-//    float distance = ping_getDistance();
-//
-//    struct point dist[180];
-//    timer_waitMillis(250);
-//    int i;
-//    for(i = 0; i < 181; i++){
-//        timer_waitMillis(50);
-//        struct point p = {pow(adc_get_raw(), -1.855) * 2E+07, ping_getDistance()};
-//        dist[i] = p;
-//        lcd_printf("%d %f", dist[i].ir, dist[i].sonar);
-//        servo_move(i);
-//    }
-//
-//}
