@@ -31,5 +31,6 @@ struct object_info{
 
 void sweep_and_detect_objects();
 void checkpoint1_sweep();
+void sweep(double x, double y, struct object);
 
 #endif /* SWEEP_H_ */
