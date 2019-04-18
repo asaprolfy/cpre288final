@@ -12,14 +12,6 @@
  * main.c
  */
 
-struct object_info{
-
-    double distance;
-    int degree;
-    double width;
-    //also X position
-    //y position
-};
 
 
 int main(){
@@ -31,6 +23,5 @@ int main(){
 
     checkpoint1_sweep();
 
-    zanes_main_logic();
+    sweep_and_detect_objects();
 }
-
