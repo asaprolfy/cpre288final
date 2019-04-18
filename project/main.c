@@ -12,16 +12,6 @@
  * main.c
  */
 
-struct object_info{
-
-    double distance;
-    int degree;
-    double width;
-    //also X position
-    //y position
-};
-
-
 int main(){
     lcd_init();
     timer_init();

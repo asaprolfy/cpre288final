@@ -20,6 +20,15 @@
 
 volatile signed pulse_width;
 
+struct object_info{
+
+    double distance;
+    int degree;
+    double width;
+    //also X position
+    //y position
+};
+
 void servo_init();
 int servo_move(float degrees);
 void servo_move_to_zero();
