@@ -26,13 +26,14 @@ void sweep_and_detect_objects() {
         if(abs(sonar-ir) < 20 && flag == 0 && sonar < 60){
             flag = 1;
             start = degrees;
+            object[count].distance = sonar; //nick and I found it is better to measure distance at start of the sweep
             //count++;
         }
         // if the object is no longer detected calculate range and size, add to struct array
         if(abs(sonar-ir) > 20 && flag == 1 && sonar <60 && ir>sonar){
             finish = degrees;
             flag = 0;
-            object[count].distance = sonar;
+            //object[count].distance = sonar;
             object[count].degree = finish-start;
             object[count].width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) - 3;
             count++;
