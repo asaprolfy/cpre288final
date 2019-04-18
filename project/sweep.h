@@ -22,4 +22,4 @@
 void sweep_and_detect_objects();
 void checkpoint1_sweep();
 
-#endif SWEEP_H_
+#endif /* SWEEP_H_ */
