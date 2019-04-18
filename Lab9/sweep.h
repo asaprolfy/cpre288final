@@ -6,6 +6,9 @@
  *   Author: Rolf Anderson
  */
 
+#ifndef SWEEP_H_
+#define SWEEP_H_
+
 #include "uart.h"
 #include "lcd.h"
 #include "inc/tm4c123gh6pm.h"
@@ -18,3 +21,5 @@
 
 void sweep_and_detect_objects();
 void checkpoint1_sweep();
+
+#endif SWEEP_H_
