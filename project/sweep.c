@@ -9,17 +9,6 @@
 #include "sweep.h"
 
 
-struct object_info{
-
-    double distance;
-    int degree;
-    double width;
-    //also X position
-    //y position
-};
-
-
-
 void sweep_and_detect_objects() {
 
     struct object_info object[3];

@@ -19,6 +19,16 @@
 #include "button.h"
 #include "string.h"
 
+struct object_info{
+
+    double distance;
+    int degree;
+    double width;
+    //also X position
+    //y position
+};
+
+
 void sweep_and_detect_objects();
 void checkpoint1_sweep();
 
