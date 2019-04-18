@@ -32,22 +32,9 @@ int main(){
     servo_init();
     uart_init();
 
-    //servo_move(0);
-
-    //while(1){
-    //    test_uart_wifi();
-    //    timer_waitMillis(500);
-    //}
-    //checkpoint1_sweep();
+    checkpoint1_sweep();
 
     zanes_main_logic();
-}
-
-void test_uart_wifi() {
-
-    char str[30] = "Sorry Zane, I can't do that";
-
-    uart_sendStr(str);
 }
 
 void checkpoint1_sweep() {
