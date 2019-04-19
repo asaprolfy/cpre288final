@@ -3,7 +3,7 @@
  *
  *
  * Created:  April 17, 2019
- *   Author: Rolf Anderson
+ *   Author: Rolf Anderson, Zane Hala
  */
 
 #include "sweep.h"
@@ -20,19 +20,19 @@ void sweep_and_detect_objects() {
         degrees = i;
         sonar = ping_getDistance();
 //        ir = 105375 * pow(adc_avg_distance(), -1.153);
-        ir = pow(adc_avg_distance(), -1.855) * 2E+07;
+		ir = pow(adc_avg_distance(), -.885) * 22239;
 
         // if there is something within range begin keeping track of degrees
         if(abs(sonar-ir) < 20 && flag == 0 && sonar < 60){
             flag = 1;
-            start = degrees;
+			start = degrees;
+			object[count].distance = sonar;
             //count++;
         }
         // if the object is no longer detected calculate range and size, add to struct array
         if(abs(sonar-ir) > 20 && flag == 1 && sonar <60 && ir>sonar){
             finish = degrees;
             flag = 0;
-            object[count].distance = sonar;
             object[count].degree = finish-start;
             object[count].width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) - 3;
             count++;
