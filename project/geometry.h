@@ -18,5 +18,7 @@ void get_commands(double *angle, double *a_distance, double *b_distance, double 
 void get_triangle(double *point_x, double *point_y, double x1, double y1, double x2, double y2);
 //returns the minimum angle the robot would have to turn to avoid an object;
 double min_angle(double object_width, double object_distance);
+//returns 1 if the robot sees the object, 0 if it doesnt.
+double in_view(double angle, double x, double y);
 
 #endif
