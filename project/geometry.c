@@ -41,8 +41,8 @@ void point_from_robot(double slope, double intercept, double *x, double *y){
 	
 	*y = m*(*x)-b;	
 	
-	*x*=-1;
-	*y*=-1;
+	*x *=-1;
+	*y *=-1;
 }
 
 /*
