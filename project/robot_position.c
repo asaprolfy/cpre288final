@@ -40,7 +40,7 @@ void get_robot_position(double *x, double *y){
 }
 
 /*
-* updates the robots current orientation given an angle to turn.
+* returns the robots current angle relative to its initial angle
 * @Author: Brandon Johnson
 * @Date: 4/18/2019
 */
