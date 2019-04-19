@@ -16,5 +16,7 @@ double distance_between_points(double x1, double y1, double x2, double y2);
 void get_commands(double *angle, double *a_distance, double *b_distance, double robot_x, double robot_y, double mid_x, double mid_y, double x, double y);
 //combines functions line from mid and point from robot
 void get_triangle(double *point_x, double *point_y, double robot_x, double robot_y, double x1, double y1, double x2, double y2);
+//returns the minimum angle the robot would have to turn to avoid an object;
+double min_angle(double object_width, double object_distance);
 
 #endif
