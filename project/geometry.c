@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <math.h>
 #include "geometry.h"
+#include "robot_position.h"
 
+//Global variables for robot_position
+double robot_x;
+double robot_y;
 
 /*
 * Given two points x and y, this function returns the midpoint (x,y)
@@ -18,7 +22,9 @@ void midpoint(double *x, double *y, double x1, double y1, double x2, double y2){
 * @Author: Brandon Johnson
 * @Date: 4/13/2019
 */
-void point_from_robot(double slope, double intercept, double robot_x, double robot_y, double *x, double *y){
+void point_from_robot(double slope, double intercept, double *x, double *y){
+	
+	get_robot_position(&robot_x, &robot_y);
 	
 	double m, b;
 	
@@ -66,9 +72,11 @@ void line_from_midpoint(double *slope, double *intercept, double x1, double y1, 
 * @Author: Brandon Johnson
 * @Date: 4/13/2019
 */
-void object_position(double x, double y, double angle, double distance, double *x_obj, double *y_obj){	
-	*x_obj = distance*cos(angle*M_PI/180)+ x;
-	*y_obj = distance*sin(angle*M_PI/180)+ y;
+void object_position(double angle, double distance, double *x_obj, double *y_obj){	
+	get_robot_position(&robot_x, &robot_y);
+	
+	*x_obj = distance*cos(angle*M_PI/180)+ robot_x;
+	*y_obj = distance*sin(angle*M_PI/180)+ robot_y;
 	return;	
 }
 /*
@@ -77,7 +85,9 @@ void object_position(double x, double y, double angle, double distance, double *
 * @Author: Brandon Johnson
 * @Date: 4/14/2019
 */
-void get_triangle(double *point_x, double *point_y, double robot_x, double robot_y, double x1, double y1, double x2, double y2){
+void get_triangle(double *point_x, double *point_y, double x1, double y1, double x2, double y2){
+	get_robot_position(&robot_x, &robot_y);
+	
 	double slope1, intercept1, slope2, intercept2, x_mid, y_mid;
 	//slope of line between both objects
 	slope1 = (y2-y1)/(x2-x1);
@@ -122,7 +132,8 @@ double distance_between_points(double x1, double y1, double x2, double y2){
 * @Author: Brandon Johnson
 * @Date: 4/12/2019
 */
-void get_commands(double *angle, double *a_distance, double *b_distance, double robot_x, double robot_y, double mid_x, double mid_y, double x, double y){
+void get_commands(double *angle, double *a_distance, double *b_distance, double mid_x, double mid_y, double x, double y){
+	get_robot_position(&robot_x, &robot_y);
 	//finds the missing sides of the triangle
 	*a_distance = distance_between_points(robot_x, robot_y, x, y);
 	*b_distance = distance_between_points(mid_x, mid_y, x, y);
