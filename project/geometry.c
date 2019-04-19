@@ -151,3 +151,40 @@ double min_angle(double object_width, double object_distance){
 	//object width/2 = radius, adding the robot radius +5 cm to be safe
 	return atan((object_width/2+5+16.5)/object_distance)*180/M_PI;
 }
+
+/*
+* Given an objects x and y positions and the angle the robot is facing, returns wheter the object can be seen by the robot
+* @Author: Nicholas Wolf
+* @Date: 4/19/2019
+*/
+double in_view(double angle, double x, double y){
+	get_robot_position(&robot_x, &robot_y);
+	
+	int seen;
+	double side;
+	double x_mag, x1, x2;
+	double y_mag, y1, y2;
+	
+	//calculates the magnitude of the x and y distance between a object and the robot
+	x_mag = abs(x-robot_x + 10);
+	y_mag = abs(y-robot_y + 10);
+	
+	//calculates the (x,y) positions of two points that are perpendicular to the current angle of the robot 
+	x1 = x_mag*cos((angle+90)*M_PI/180)+robot_x;
+	x2 = x_mag*cos((angle-90)*M_PI/180)+robot_x;
+	y1 = y_mag*sin((angle+90)*M_PI/180)+robot_y;
+	y2 = y_mag*sin((angle-90)*M_PI/180)+robot_y;
+
+	//calculates the value side, if side>0, then object is not detected and vice versa
+	side = (x-x1)*(y2-y1)-(y-y1)*(x2-x1);
+
+	//sets whether the object is seen or not
+	if(side<0){
+		seen = 1;
+	}
+	else{
+		seen = 0;
+	}
+	
+	return seen;
+}
