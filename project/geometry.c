@@ -129,3 +129,14 @@ void get_commands(double *angle, double *a_distance, double *b_distance, double 
 	//finds angle from midpoint to object
 	*angle = atan((*b_distance/(*a_distance)))*180/M_PI;
 }
+
+/*
+* Given the robots distance to an object and its width, this function
+* returns the minimum angle the robot needs to turn to avoid it.
+* @Author: Brandon Johnson
+* @Date: 4/18/2019
+*/
+double min_angle(double object_width, double object_distance){	
+	//object width/2 = radius, adding the robot radius +5 cm to be safe
+	return atan((object_width/2+5+16.5)/object_distance)*180/M_PI;
+}
