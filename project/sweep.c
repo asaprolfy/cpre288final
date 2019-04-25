@@ -8,6 +8,8 @@
 
 #include "sweep.h"
 
+// All this stuff is not for the final except for sweep()
+
 
 void sweep_and_detect_objects() {
 
@@ -26,23 +28,14 @@ void sweep_and_detect_objects() {
         // if there is something within range begin keeping track of degrees
         if(abs(sonar-ir) < 20 && flag == 0 && sonar < 60){
             flag = 1;
-<<<<<<< HEAD
-			start = degrees;
-			object[count].distance = sonar;
-=======
             start = degrees;
             object[count].distance = sonar; //nick and I found it is better to measure distance at start of the sweep
->>>>>>> 55bdf4d088ab30de15ded6a6c74c54b473911acb
             //count++;
         }
         // if the object is no longer detected calculate range and size, add to struct array
         if(abs(sonar-ir) > 20 && flag == 1 && sonar <60 && ir>sonar){
             finish = degrees;
             flag = 0;
-<<<<<<< HEAD
-=======
-            //object[count].distance = sonar;
->>>>>>> 55bdf4d088ab30de15ded6a6c74c54b473911acb
             object[count].degree = finish-start;
             object[count].width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) - 3;
             count++;
@@ -115,6 +108,7 @@ void checkpoint1_sweep() {
     servo_move(0);
 }
 
+// Don't delete this please gamres
 void sweep(double x, double y, struct object){
     int degrees, start, finish, flag = 0;
     double ir, sonar;
