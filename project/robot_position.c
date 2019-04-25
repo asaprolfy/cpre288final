@@ -25,6 +25,14 @@ void update_robot_position(double distance){
 */
 void update_robot_angle(double angle){
 	robot.angle = robot.angle + angle;
+	//keeping robot between 0 and 360 degrees
+	if(robot.angle >= 360){
+		robot.angle -= 360;
+	}
+	if(robot.angle < 0){
+		robot.angle += 360;
+	}
+	
 	return;
 }
 
