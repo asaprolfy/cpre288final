@@ -28,9 +28,11 @@ struct object_info{
     //y position
 };
 
+struct object_array[50];
+int objects_found;
 
 void sweep_and_detect_objects();
 void checkpoint1_sweep();
-void sweep(double x, double y, struct object);
+int sweep(double x, double y, struct object);
 
 #endif /* SWEEP_H_ */

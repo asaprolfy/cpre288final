@@ -109,7 +109,8 @@ void checkpoint1_sweep() {
 }
 
 // Don't delete this please gamres
-void sweep(double x, double y, struct object){
+// Sweeps for objects and returns an integer of the amount of object detected
+int sweep(double x, double y, struct object){
     int degrees, start, finish, flag = 0;
     double ir, sonar;
     double *x_obj, *y_obj
@@ -135,11 +136,16 @@ void sweep(double x, double y, struct object){
             object[count].distance = sonar;
             object[count].width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) - 3;
             object[count].x = *x_obj;
-            object[count].y = y_obj
+            object[count].y = *y_obj
             count++;
         }
         servo_move(i);
 
+    }
+
+    for(i = 0; i < count; i++){
+        object_array[objects_found] = object[i];
+        ++objects_found;
     }
 }
 
