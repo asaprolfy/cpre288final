@@ -17,7 +17,12 @@ volatile int isBoundary;
 volatile int on;
 #define BOUNDARY_DETECTION 2700
 
-
+/*
+ * The purpose of 'on' is so that the logic that determines the goal allows it to overide the movement command
+ * that stops the robot from passing over the tape it determines to indicate a boundary. This allows the robot to enter
+ * the destination.
+ * 
+ */
 int checkCliffSensor(oi_t *sensor)
 {
     while(on==1){
@@ -40,3 +45,4 @@ int checkCliffSensor(oi_t *sensor)
     }
     return 0;
 }
+
