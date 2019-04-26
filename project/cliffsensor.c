@@ -25,7 +25,6 @@ volatile int on;
  */
 int checkCliffSensor(oi_t *sensor)
 {
-    while(on==1){
     oi_update(sensor);
 
     cliffLeft = sensor -> cliffLeftSignal;
@@ -40,8 +39,6 @@ int checkCliffSensor(oi_t *sensor)
     if(cliffLeft<1100||cliffRight<1100||cliffFrontLeft<1100||cliffFrontRight<1100)
     {
         return 1;
-    }
-
     }
     return 0;
 }
