@@ -15,7 +15,7 @@
  * @date 2/15/2019
  */
 
-#define CYBOT_TOLERANCE_VALUE_MOVE_FORWARD -60
+#define CYBOT_TOLERANCE_VALUE_MOVE_FORWARD 0
 #define CYBOT_TOLERANCE_VALUE_MOVE_BACKWARD 35
 #define CYBOT_TOLERANCE_VALUE_TURN 2
 
@@ -37,19 +37,24 @@ void move_forward(oi_t *sensor,int centimeters)
     int x=0;
     int isBoundaryOrCliff = 0;
 
-    int milli=(centimeters*10) + CYBOT_TOLERANCE_VALUE_MOVE_FORWARD;
+    int milli=((centimeters*10)*0.7594) + CYBOT_TOLERANCE_VALUE_MOVE_FORWARD;
     int sum = 0;
-    oi_setWheels(200,200); //move forward full speed
+    double p;
+    int enter=0;
+    oi_setWheels(100,100); //move forward full speed
     while(sum < milli)
     {
+        lcd_printf("sum:%d \n milli:%d",sum,milli);
         // Determines the distance the robot has moved
         oi_update(sensor);
-        update_robot_position((((sensor -> distance)*(M_PI*72))/509)*0.4545); //Trial code to improve the distance accuracy
-        //update_robot_position(((sensor -> distance)/4));
+         //Trial code to improve the distance accuracy
+
 
         isBoundaryOrCliff = checkCliffSensor(sensor);
         if(isBoundaryOrCliff==1 && x>=3)
         {
+            enter=1;
+            p=(sum/milli) * 30;
             move_backward(sensor,5);
             turn_right(sensor,180);
             x=0;
@@ -57,11 +62,18 @@ void move_forward(oi_t *sensor,int centimeters)
         }
 
         x++;
-        sum += sensor -> distance;
+        sum += (sensor -> distance);
 
     }
 
     oi_setWheels(0,0); //stop
+    /*if (enter==0){
+        update_robot_position(centimeters);
+    } else {
+        update_robot_position(p-5);
+    }*/
+
+    //update_robot_position((((sensor -> distance)*(M_PI*72))/509)*0.4545);
 }
 
 /*
@@ -95,11 +107,10 @@ void move_backward(oi_t *sensor,int centimeters)
 {
         int milli=(centimeters*-10) + CYBOT_TOLERANCE_VALUE_MOVE_BACKWARD;
         int sum = 0;
-        oi_setWheels(-200,-200); //move forward full speed
+        oi_setWheels(-100,-100); //move forward full speed
 
         while(sum > milli) { // Determines the distance the robot has moved
             oi_update(sensor);
-            update_robot_position(-((sensor -> distance)/6));
             sum += sensor -> distance;
         }
 
@@ -177,8 +188,3 @@ void turn_left(oi_t *sensor,int degrees)
     oi_setWheels(0,0); //stop
 
 }
-
-
-
-
-
