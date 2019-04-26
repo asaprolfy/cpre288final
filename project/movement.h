@@ -1,19 +1,26 @@
+#ifndef MOVEMENT_H
+#define MOVEMENT_H
+
 #include "open_interface.h"
+#include "movement.h"
+#include "uart.h"
+#include "cliffSensor.h"
+#include "lcd.h"
+#include "robot_position.h"
+#include "math.h"
 
-/*
- * movement.h
- *
- *  Created on: Feb 8, 2019
- *      Author: zhala
- */
 
-#ifndef MOVEMENT_H_
-#define MOVEMENT_H_
+void move_forward(oi_t *sensor,int centimeters);
 
-void move_forward(oi_t *sensor_data, int centimeters);
-void move_backward(oi_t *sensor_data, int centimeters);
-void turn_right(oi_t *sensor_data, int degrees);
-void turn_left(oi_t *sensor_data, int degrees);
-int checkBump(oi_t *sensor_data);
+void turn_right(oi_t *sensor,int degrees);
 
-#endif /* MOVEMENT_H_ */
+void turn_left(oi_t *sensor,int degrees);
+
+void move_forward_withBumpers(oi_t *sensor,int centimeters);
+
+void move_backward(oi_t *sensor,int centimeters);
+
+
+
+
+#endif
