@@ -19,6 +19,8 @@
 #define CYBOT_TOLERANCE_VALUE_MOVE_BACKWARD 35
 #define CYBOT_TOLERANCE_VALUE_TURN 2
 
+volatile int rawDistance;
+
 /*
  * Notes on how the encoder increments
  *The cumulative number of raw left encoder counts is returned as a signed 16-bit number,
@@ -32,48 +34,60 @@
  *N counts * (pi * 72.0 / 508.8) = mm
  */
 
-void move_forward(oi_t *sensor,int centimeters)
+void move_forward(oi_t *sensor,int centimeters) //UPDATED to raw data
 {
+    int left = sensor -> leftEncoderCount;
+    int right = sensor -> rightEncoderCount;
+
+    int bumpL = 0;
+    int bumpR= 0;
+
     int x=0;
     int isBoundaryOrCliff = 0;
 
-    int milli=((centimeters*10)*0.7594) + CYBOT_TOLERANCE_VALUE_MOVE_FORWARD;
+    int milli=((centimeters*10)*0.37);
     int sum = 0;
-    double p;
-    int enter=0;
+    sum = centimeters;
     oi_setWheels(100,100); //move forward full speed
-    while(sum < milli)
+    while(sensor -> leftEncoderCount-left < 22.222*(centimeters)-32.444)
     {
-        lcd_printf("sum:%d \n milli:%d",sum,milli);
+
         // Determines the distance the robot has moved
         oi_update(sensor);
-         //Trial code to improve the distance accuracy
+        //Trial code to improve the distance accuracy
+
+        bumpL= sensor -> bumpLeft;
+        bumpR= sensor -> bumpRight;
+
+
+        if(bumpL==1){ // decides if the bot has hit something on its left so it responds by backing up and waiting for main logic
+            move_backward(sensor,15);
+            sum-=15;
+        }
+
+
+        if(bumpR==1){ // decides if the bot has hit something on its right so it responds by backing up and waiting for main logic
+                move_backward(sensor,15);
+                sum-=15;
+        }
 
 
         isBoundaryOrCliff = checkCliffSensor(sensor);
-        if(isBoundaryOrCliff==1 && x>=3)
-        {
-            enter=1;
-            p=(sum/milli) * 30;
+        if(isBoundaryOrCliff==1){
             move_backward(sensor,5);
+            sum-=5;
             turn_right(sensor,180);
-            x=0;
             break;
         }
 
-        x++;
-        sum += (sensor -> distance);
-
     }
-
+    update_robot_angle(sum);
+    //lcd_printf("left:%d \n right:%d",(sensor -> leftEncoderCount)-left,(sensor -> rightEncoderCount)-right);
     oi_setWheels(0,0); //stop
-    /*if (enter==0){
-        update_robot_position(centimeters);
-    } else {
-        update_robot_position(p-5);
-    }*/
 
-    //update_robot_position((((sensor -> distance)*(M_PI*72))/509)*0.4545);
+
+
+
 }
 
 /*
@@ -82,16 +96,15 @@ void move_forward(oi_t *sensor,int centimeters)
 void turn_right(oi_t *sensor,int degrees)
 {
     int sum=degrees;
-
+    int left = sensor -> leftEncoderCount;
+    int right = sensor -> rightEncoderCount;
     oi_setWheels(-100,100); //Opposing directions allows the robot to just turn on its axis
 
 
-    while(sum + CYBOT_TOLERANCE_VALUE_TURN > 0)
-    { // Turns the robot until the angle has been met, the constant corrects the turns
-
+    while((left - sensor -> leftEncoderCount) > -390)//sum + CYBOT_TOLERANCE_VALUE_TURN > 0
+    {
         oi_update(sensor);
-        sum += sensor -> angle;
-        lcd_printf("sum:%d\nsenVal:%d",sum,sensor -> angle);
+        lcd_printf("sum:%d\n",left - sensor -> leftEncoderCount);
     }
 
     update_robot_angle(degrees);
@@ -103,15 +116,14 @@ void turn_right(oi_t *sensor,int degrees)
 
 
 
-void move_backward(oi_t *sensor,int centimeters)
+void move_backward(oi_t *sensor,int centimeters)  //UPDATED to raw data
 {
-        int milli=(centimeters*-10) + CYBOT_TOLERANCE_VALUE_MOVE_BACKWARD;
-        int sum = 0;
-        oi_setWheels(-100,-100); //move forward full speed
+        int left = sensor -> leftEncoderCount;
 
-        while(sum > milli) { // Determines the distance the robot has moved
+        oi_setWheels(-100,-100); //move backward full speed
+
+        while(left - sensor -> leftEncoderCount < 21.978*centimeters-22.769) { // Determines the distance the robot has moved
             oi_update(sensor);
-            sum += sensor -> distance;
         }
 
 
@@ -120,71 +132,26 @@ void move_backward(oi_t *sensor,int centimeters)
 
 }
 
-void move_forward_withBumpers(oi_t *sensor,int centimeters)
-{
-    int milli=centimeters*10;
-    int sum = 0;
-
-    int bumpL = 0;
-    int bumpR= 0;
-     //move forward full speed
-
-    while(sum < milli) {
-        oi_setWheels(300,300);
-        oi_update(sensor);
-        sum += sensor -> distance; // increments sum with the distance it has travelled since last update
-
-
-
-            bumpL= sensor -> bumpLeft;
-            bumpR= sensor -> bumpRight;
-
-
-            if(bumpL==1){ // decides if the bot has hit something on its left so it responds by backing up, turning right, facing forward, then resuming travel
-                move_backward(sensor,15);
-                sum=sum-250;
-                turn_right(sensor,-90);
-                move_forward(sensor,25);
-                turn_left(sensor,90);
-            }
-
-
-            if(bumpR==1){ // decides if the bot has hit something on its right so it responds by backing up, turning left, facing forward, then resuming travel
-                    move_backward(sensor,15);
-                    sum=sum-250;
-                    turn_left(sensor,90);
-                    move_forward(sensor,25);
-                    turn_right(sensor,-90);
-
-                }
-
-    }
-
-
-    oi_setWheels(0,0); //stop
-
-
-}
-
-
-
 
 void turn_left(oi_t *sensor,int degrees)
 {
 
-    oi_setWheels(200,-200); //Opposing directions allows the robot to just turn on its axis
-    int sum=0;
-    int sumDegrees=0;
+        int sum=0;
 
-    while(sumDegrees<degrees+5){ // Turns the robot until the angle has been met, the constant corrects the turns
-
-        oi_update(sensor);
-        sum+=sensor -> angle;
-        sumDegrees=sum;
+        oi_setWheels(100,-100); //Opposing directions allows the robot to just turn on its axis
 
 
-    }
+        while(sum + CYBOT_TOLERANCE_VALUE_TURN < degrees)
+        { // Turns the robot until the angle has been met, the constant corrects the turns
 
-    oi_setWheels(0,0); //stop
+            oi_update(sensor);
+            sum += sensor -> angle;
+            lcd_printf("sum:%d\naim:%d",sum + CYBOT_TOLERANCE_VALUE_TURN, degrees);
+        }
+
+        lcd_printf("sum:%d\naim:%d",sum + CYBOT_TOLERANCE_VALUE_TURN, degrees);
+
+        update_robot_angle(degrees);
+        oi_setWheels(0,0); //stop
 
 }
