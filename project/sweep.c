@@ -7,10 +7,20 @@
  */
 
 #include "sweep.h"
+#include "uart.h"
+#include "adc.h"
+#include <math.h>
+#include "ping.h"
+#include "servo.h"
+#include "geometry.h"
+#include "robot_position.h"
+
+object_info object[50];
+int count = 0;
 
 // All this stuff is not for the final except for sweep()
 
-
+/*
 void sweep_and_detect_objects() {
 
     struct object_info object[3];
@@ -69,9 +79,10 @@ void sweep_and_detect_objects() {
 
     // attempt to send to putty
     uart_sendStr("\ndistance\tnum_degree\twidth\n");
+
 }
-
-
+*/
+/*
 void checkpoint1_sweep() {
 
     //struct object_info c1_objects[10];
@@ -108,14 +119,16 @@ void checkpoint1_sweep() {
     servo_move(0);
 }
 
+*/
+
 // Don't delete this please gamres
 // Sweeps for objects and returns an integer of the amount of object detected
-int sweep(double x, double y, struct object){
+void sweep(){
     int degrees, start, finish, flag = 0;
     double ir, sonar;
-    double *x_obj, *y_obj
-    int count = 0;
+    double x_obj, y_obj;
     int i, mid_angle;
+
     for(i = 0; i < 181; i++){
         degrees = i;
         sonar = ping_getDistance();
@@ -132,20 +145,32 @@ int sweep(double x, double y, struct object){
             flag = 0;
             // put in the struct given
             mid_angle = (start + finish) / 2;
-            object_position(x, y, mid_angle, sonar, *x_obj, *y_obj;
+            object_position(mid_angle, sonar, &x_obj, &y_obj);
             object[count].distance = sonar;
             object[count].width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) - 3;
-            object[count].x = *x_obj;
-            object[count].y = *y_obj
+            object[count].x = x_obj;
+            object[count].y = y_obj;
             count++;
         }
         servo_move(i);
 
     }
 
-    for(i = 0; i < count; i++){
-        object_array[objects_found] = object[i];
-        ++objects_found;
-    }
 }
+
+int get_num_objects(){
+    return count;
+}
+
+void get_object_position(double *x, double *y, int index){
+
+    *x = object[index].x;
+    *y = object[index].y;
+}
+
+double get_object_width(int index){
+    return object[index].width;
+}
+
+
 
