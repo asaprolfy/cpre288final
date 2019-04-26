@@ -1,38 +1,18 @@
-/*
- * sweep.h
- *
- *
- * Created:  April 17, 2019
- *   Author: Rolf Anderson
- */
-
 #ifndef SWEEP_H_
 #define SWEEP_H_
 
-#include "uart.h"
-#include "lcd.h"
-#include "inc/tm4c123gh6pm.h"
-#include "adc.h"
-#include "math.h"
-#include "ping.h"
-#include "servo.h"
-#include "button.h"
-#include "string.h"
-
-struct object_info{
-
+typedef struct object_information{
     double distance;
     int degree;
     double width;
-    //also X position
-    //y position
-};
+    double x;
+    double y;
+}object_info;
 
-struct object_array[50];
-int objects_found;
-
-void sweep_and_detect_objects();
-void checkpoint1_sweep();
-int sweep(double x, double y, struct object);
+//void sweep_and_detect_objects();
+//void checkpoint1_sweep();
+void sweep();
+int get_num_objects();
+void get_object_position(double *x, double *y, int index);
 
 #endif /* SWEEP_H_ */
