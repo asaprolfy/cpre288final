@@ -21,6 +21,7 @@ int object_count = 0;
 // Don't delete this please gamres
 // Sweeps for objects and returns an integer of the amount of objects detected
 void sweep(){
+    int count = object_count;
     int degrees, start, finish, flag = 0;
     double ir, sonar;
     double x_obj, y_obj;
