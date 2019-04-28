@@ -9,10 +9,8 @@ typedef struct object_information{
     double y;
 }object_info;
 
-//void sweep_and_detect_objects();
-//void checkpoint1_sweep();
 void sweep();
 int get_num_objects();
-void get_object_position(double *x, double *y, int index);
+void get_object_info(double *x, double *y, double *width, int index);
 
 #endif /* SWEEP_H_ */
