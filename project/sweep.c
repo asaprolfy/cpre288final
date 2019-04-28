@@ -48,7 +48,7 @@ void sweep(){
             object[count].distance = sonar;
             object[count].width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) - 3;
             object[count].x = x_obj;
-            object[count].y = y_obj;
+            object[count].y = y_obj+(object[count].width/2);
             count++;
         }
         servo_move(i);
@@ -70,5 +70,11 @@ void get_object_info(double *x, double *y, double *width, int index){
     *width = object[index].width;
 }
 
+void add_object(double x, double y, double width){
+    object_count += 1;
+    object[object_count].x = x;
+    object[object_count].y = y;
+    object[object_count].width = width;
+}
 
 
