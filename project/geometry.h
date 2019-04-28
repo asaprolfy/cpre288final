@@ -13,7 +13,7 @@ void object_position(double angle, double distance, double *x_obj, double *y_obj
 //return the distance between two points
 double distance_between_points(double x1, double y1, double x2, double y2);
 //gets the commands for the robot once everything has been calculated
-void get_commands(double *angle, double *a_distance, double *b_distance, double mid_x, double mid_y, double x, double y);
+void get_commands(int *direction, double *angle, double *a_distance, double *b_distance, double mid_x, double mid_y, double x, double y);
 //combines functions line from mid and point from robot
 void get_triangle(double *point_x, double *point_y, double x1, double y1, double x2, double y2);
 //returns the minimum angle the robot would have to turn to avoid an object;
