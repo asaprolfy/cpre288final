@@ -15,7 +15,10 @@ volatile extern int cliffRight;
 volatile extern int cliffFrontLeft;
 volatile extern int cliffFrontRight;
 volatile extern int isBoundary;
-volatile extern int on;
+volatile extern int cliffhigh;
+volatile extern int boundary;
+volatile extern int sense;
+
 
 int checkCliffSensor(oi_t *sensor);
 
