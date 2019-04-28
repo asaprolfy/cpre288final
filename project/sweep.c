@@ -63,14 +63,11 @@ int get_num_objects(){
     return object_count;
 }
 
-void get_object_position(double *x, double *y, int index){
+void get_object_info(double *x, double *y, double *width, int index){
 
     *x = object[index].x;
     *y = object[index].y;
-}
-
-double get_object_width(int index){
-    return object[index].width;
+    *width = object[index].width;
 }
 
 
