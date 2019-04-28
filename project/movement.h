@@ -9,6 +9,8 @@
 #include "robot_position.h"
 #include "math.h"
 
+volatile extern int rawDistance;
+volatile extern int completion;
 
 void move_forward(oi_t *sensor,int centimeters);
 
