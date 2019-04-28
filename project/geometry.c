@@ -132,13 +132,38 @@ double distance_between_points(double x1, double y1, double x2, double y2){
 * @Author: Brandon Johnson
 * @Date: 4/12/2019
 */
-void get_commands(double *angle, double *a_distance, double *b_distance, double mid_x, double mid_y, double x, double y){
+void get_commands(int *direction, double *angle, double *a_distance, double *b_distance, double mid_x, double mid_y, double x, double y){
+	//get robot info
+	double robot_angle = get_robot_angle();
 	get_robot_position(&robot_x, &robot_y);
+	
 	//finds the missing sides of the triangle
 	*a_distance = distance_between_points(robot_x, robot_y, x, y);
 	*b_distance = distance_between_points(mid_x, mid_y, x, y);
-	//finds angle from midpoint to object
-	*angle = atan((*b_distance/(*a_distance)))*180/M_PI;
+
+	//find points x,y position relative to the robot
+	x = x-robot_x;
+	y = y-robot_y;
+	
+	//find angle of the point
+	double other_angle = atan2(y,x)*180/M_PI;
+	
+	//atan returns negatives, negatives are bad as we only want positive angles
+	if(other_angle < 0){
+		other_angle += 360;
+	}
+	
+	//determine if the robot needs to turn right or left and calculate angle
+	//absolute value because direction takes care of negatives.
+	if(robot_angle >= other_angle){
+		*direction = 1;
+		*angle = abs(robot_angle-other_angle); 
+	}
+	else{
+		*direction = 0;	
+		*angle = abs(robot_angle-other_angle); 
+	}
+	
 }
 
 /*
