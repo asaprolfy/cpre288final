@@ -12,5 +12,6 @@ typedef struct object_information{
 void sweep();
 int get_num_objects();
 void get_object_info(double *x, double *y, double *width, int index);
+void add_object(double x, double y, double width);
 
 #endif /* SWEEP_H_ */
