@@ -22,7 +22,7 @@ void move_forward_withBumpers(oi_t *sensor,int centimeters);
 
 void move_backward(oi_t *sensor,int centimeters);
 
-
+int completed();
 
 
 #endif
