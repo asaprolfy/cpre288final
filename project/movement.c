@@ -131,3 +131,7 @@ void turn_left(oi_t *sensor, int degrees)
     oi_setWheels(0, 0); //stop
 
 }
+//used to see if move forward has been completed succesfully
+int completed(){
+    return completion;
+}
