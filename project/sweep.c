@@ -92,17 +92,17 @@ void add_object(double width)
             object[object_count].x = x;
             object[object_count].y = y + 5;
         }
-        else if (angle > 90 && angle <= 180)
+        else if (angle > 90 && angle <= 180) //Q2
         {
             object[object_count].x = x-5;
             object[object_count].y = y;
         }
-        else if (angle > 180 && angle <= 270)
+        else if (angle > 180 && angle <= 270) //Q3
         {
             object[object_count].x = x;
             object[object_count].y = y - 5;
         }
-        else if (angle > 270 && (angle <= 360 || angle == 0))
+        else if (angle > 270 && (angle <= 360 || angle == 0)) //Q4
         {
             object[object_count].x = x + 5;
             object[object_count].y = y;
@@ -111,22 +111,22 @@ void add_object(double width)
     }
     else if (sense == 6)
     {
-        if (angle > 0 && angle <= 90)
+        if (angle > 0 && angle <= 90) //Q1
         {
             object[object_count].x = x + 5;
             object[object_count].y = y;
         }
-        else if (angle > 90 && angle <= 180)
+        else if (angle > 90 && angle <= 180) //Q2
         {
             object[object_count].x = x;
             object[object_count].y = y + 5;
         }
-        else if (angle > 180 && angle <= 270)
+        else if (angle > 180 && angle <= 270) //Q3
         {
             object[object_count].x = x-5;
             object[object_count].y = y;
         }
-        else if (angle > 270 && (angle <= 360 || angle == 0))
+        else if (angle > 270 && (angle <= 360 || angle == 0)) //Q4
         {
             object[object_count].x = x;
             object[object_count].y = y-5;
