@@ -179,7 +179,7 @@ double min_angle(double object_width, double object_distance){
 
 int in_view(double x, double y){
     get_robot_position(&robot_x, &robot_y);
-    angle = get_robot_angle();
+    double angle = get_robot_angle();
     int seen;
     double side;
     double x_mag, x1, x2;
