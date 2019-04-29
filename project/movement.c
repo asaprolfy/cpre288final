@@ -90,7 +90,7 @@ void turn_right(oi_t *sensor, int degrees)
     //int right = sensor -> rightEncoderCount; not really necessary would allow more accurate turning, accurate to the point of not relevant REMOVAL?
     oi_setWheels(-100, 100); //Opposing directions allows the robot to just turn on its axis, lower values increase accuracy
 
-    while ((left - sensor->leftEncoderCount) > -390) //sum + CYBOT_TOLERANCE_VALUE_TURN > 0
+    while ((left - sensor->leftEncoderCount) > -4.2683*degrees + 27.251) //sum + CYBOT_TOLERANCE_VALUE_TURN > 0                    rawData = -4.2683*degrees + 27.251    ||  (-4.4355*degrees)+37.599
     {
         oi_update(sensor);
     }
@@ -122,7 +122,7 @@ void turn_left(oi_t *sensor, int degrees)
 
     oi_setWheels(100, -100); //Opposing directions allows the robot to just turn on its axis, lower values increase accuracy
 
-    while ((left - sensor->leftEncoderCount) < 390)
+    while ((left - sensor->leftEncoderCount) < (-4.2683*degrees + 27.251)*-1)
     { // Turns the robot until the angle has been met, the constant corrects the turns
 
         oi_update(sensor);
