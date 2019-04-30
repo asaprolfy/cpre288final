@@ -5,6 +5,7 @@
 #include "lcd.h"
 #include "robot_position.h"
 #include "math.h"
+#include "sweep.h"
 
 /**
  * movement.c
@@ -24,10 +25,9 @@ volatile int rawDistance;
 volatile int completion;
 volatile int sense;
 
-
 void move_forward(oi_t *sensor, int centimeters) //UPDATED to raw data
 {
-    completion=1;
+    completion = 1;
     int left = sensor->leftEncoderCount;
 
     int bumpL = 0;
@@ -36,8 +36,7 @@ void move_forward(oi_t *sensor, int centimeters) //UPDATED to raw data
     int isBoundaryOrCliff = 0;
 
     int sum = 0;
-    sum = centimeters;
-    oi_setWheels(100, 100); //move forward full speed
+    oi_setWheels(100, 100); //move forward
     while (sensor->leftEncoderCount - left < 22.222 * (centimeters) - 32.444)
     {
 
@@ -45,23 +44,40 @@ void move_forward(oi_t *sensor, int centimeters) //UPDATED to raw data
         oi_update(sensor);
         //Trial code to improve the distance accuracy
 
+        if (left > sensor->leftEncoderCount) //If the encoder rolls over during operation movement gets cut off and sum gets spit out without updating
+        {
+            break;
+        }
+
+        sum = 0.045 * (sensor->leftEncoderCount - left) - 1.45998 + 4;
+
         bumpL = sensor->bumpLeft;
         bumpR = sensor->bumpRight;
 
         if (bumpL == 1)
         { // decides if the bot has hit something on its left so it responds by backing up and waiting for main logic
-            move_backward(sensor, 15);
-            sum -= 15;
+
+            lcd_printf("object cm:%d\n", sum);
+            move_backward(sensor, 5);
+            sum -= 5;
             sense = 5;
+            update_robot_position(sum + 5); //Compensates for the sum -=5 above
+            add_object(13);
+            update_robot_position(-7); //Compensates for the update_robot_position above
             completion = 0;
+            break;
         }
 
         if (bumpR == 1)
         { // decides if the bot has hit something on its right so it responds by backing up and waiting for main logic
-            move_backward(sensor, 15);
-            sum -= 15;
-            sense=6;
+            move_backward(sensor, 5);
+            sum -= 5;
+            sense = 6;
+            update_robot_position(sum + 5); //Compensates for the sum -=5 above
+            add_object(13);
+            update_robot_position(-7); //Compensates for the update_robot_position above
             completion = 0;
+            break;
         }
 
         isBoundaryOrCliff = checkCliffSensor(sensor);
@@ -75,7 +91,11 @@ void move_forward(oi_t *sensor, int centimeters) //UPDATED to raw data
         }
 
     }
-    update_robot_angle(sum);
+    if (completion == 1) //If the bot was not interrupted it returns cm
+    {
+        update_robot_position(sum); 
+    }
+
     oi_setWheels(0, 0); //stop
 
 }
@@ -90,7 +110,7 @@ void turn_right(oi_t *sensor, int degrees)
     //int right = sensor -> rightEncoderCount; not really necessary would allow more accurate turning, accurate to the point of not relevant REMOVAL?
     oi_setWheels(-100, 100); //Opposing directions allows the robot to just turn on its axis, lower values increase accuracy
 
-    while ((left - sensor->leftEncoderCount) > -4.2683*degrees + 27.251) //sum + CYBOT_TOLERANCE_VALUE_TURN > 0                    rawData = -4.2683*degrees + 27.251    ||  (-4.4355*degrees)+37.599
+    while ((left - sensor->leftEncoderCount) > -4.2683 * degrees + 27.251) //sum + CYBOT_TOLERANCE_VALUE_TURN > 0                    rawData = -4.2683*degrees + 27.251    ||  (-4.4355*degrees)+37.599
     {
         oi_update(sensor);
     }
@@ -122,7 +142,7 @@ void turn_left(oi_t *sensor, int degrees)
 
     oi_setWheels(100, -100); //Opposing directions allows the robot to just turn on its axis, lower values increase accuracy
 
-    while ((left - sensor->leftEncoderCount) < (-4.2683*degrees + 27.251)*-1)
+    while ((left - sensor->leftEncoderCount) < (-4.2683 * degrees + 27.251) * -1)
     { // Turns the robot until the angle has been met, the constant corrects the turns
 
         oi_update(sensor);
@@ -131,7 +151,4 @@ void turn_left(oi_t *sensor, int degrees)
     oi_setWheels(0, 0); //stop
 
 }
-//used to see if move forward has been completed succesfully
-int completed(){
-    return completion;
-}
+
