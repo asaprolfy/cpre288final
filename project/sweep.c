@@ -135,4 +135,20 @@ void add_object(double width)
     }
 }
 
+/*
+ * Compares the given object with the array of currently stored objects,
+ * returns a 1 if the object is already in the array, and returns a 0 if the
+ * object is not in the array.
+ */
 
+int check_existing_object(double x, double y, double width){
+    int i;
+
+    for(i = 0; i < object_count; i++){
+        if (abs(object[i].x - x) < 15 && abs(object[i].y - y) < 15 && abs(object.width - width) < 15){
+            return 1;
+        }
+    }
+
+    return 0;
+}
