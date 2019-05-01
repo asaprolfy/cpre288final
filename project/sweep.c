@@ -145,7 +145,7 @@ int check_existing_object(double x, double y, double width){
     int i;
 
     for(i = 0; i < object_count; i++){
-        if (abs(object[i].x - x) < 15 && abs(object[i].y - y) < 15 && abs(object.width - width) < 15){
+        if (abs(object[i].x - x) < 15 && abs(object[i].y - y) < 15 && abs(object[i].width - width) < 15){
             return 1;
         }
     }
