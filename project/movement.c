@@ -156,3 +156,8 @@ void turn_left(oi_t *sensor, int degrees)
 
 }
 
+int completed()
+{
+    return completion;
+}
+
