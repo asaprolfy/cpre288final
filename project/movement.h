@@ -11,6 +11,7 @@
 
 volatile extern int rawDistance;
 volatile extern int completion;
+volatile extern int sense;
 
 void move_forward(oi_t *sensor,int centimeters);
 
