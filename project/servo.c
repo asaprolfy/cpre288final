@@ -1,12 +1,8 @@
 /*
  * servo.c
- * sweep.c
  *
  *  Created on: Mar 29, 2019
  *      Author: zhala
- *
- * Created:  April 17, 2019
- *   Author: Rolf Anderson, Zane Hala
  */
 # include "servo.h"
 
@@ -75,4 +71,83 @@ int servo_move(float degree){
     if (degree < 0) {
         return 0;
     }
+
+    if (degree > 180) {
+        return 180;
+    }
+    pulse_width = -157.9 * degree + 30044;
+
+    //set lower 16 bits of pulse width
+    //TIMER1_TBMATCHR_R = ((320000 - pulse_width) & 0xFFFF);
+    TIMER1_TBMATCHR_R = ((320000 - pulse_width) & 0xFFFF);
+
+    //set the upper 8 bits of the pulse width
+    TIMER1_TBPMR_R |= ((320000 - pulse_width) >> 16);
+    //TIMER1_TBPMR_R |= ((320000 - pulse_width) & 0xFFFF);
+
+    //Delay for the servo to move to the position
+    timer_waitMillis(50);
+
+    return pulse_width;
 }
+
+void servo_move_to_zero(){
+
+    //pulse_width = 30000;
+
+    pulse_width = 29944;
+
+    //set lower 16 bits of pulse width
+    //TIMER1_TBMATCHR_R = ((320000 - pulse_width) & 0xFFFF);
+    TIMER1_TBMATCHR_R = ((320000 - pulse_width) & 0xFFFF);
+
+    //set the upper 8 bits of the pulse width
+    //TIMER1_TBPMR_R |= ((320000 - pulse_width) >> 16);
+    TIMER1_TBPMR_R |= ((320000 - pulse_width) & 0xFFFF);
+
+    //Delay for the servo to move to the position
+}
+
+void checkpoint2(){
+    float degree = 90;
+    int direction = 1;
+    int p;
+
+    servo_move(90);
+
+    while(1){
+        switch(button_getButton()) {
+        case 1:
+            degree = degree + (1 * direction);
+            p = servo_move(degree);
+            lcd_printf("%f %d %d", degree, p, direction);
+            break;
+        case 2:
+            degree = degree + (2.5 * direction);
+            p = servo_move(degree);
+            lcd_printf("%f %d %d", degree, p, direction);
+            break;
+        case 3:
+            degree = degree + (5 * direction);
+            servo_move(degree);
+            lcd_printf("%f %d %d", degree, p, direction);
+            break;
+        case 4:
+            direction = direction * -1;
+            lcd_printf("%f %d %d", degree, p, direction);
+            break;
+        case 5:
+            degree = 0;
+            p = servo_move(degree);
+            lcd_printf("%f %d %d", degree, p, direction);
+            break;
+        case 6:
+            degree = 180;
+            p = servo_move(degree);
+            lcd_printf("%f %d %d", degree, p, direction);
+            break;
+        }
+    }
+
+}
+
