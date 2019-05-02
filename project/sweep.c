@@ -14,21 +14,30 @@
 #include "servo.h"
 #include "geometry.h"
 #include "robot_position.h"
+#include "movement.h"
 
-object_info object[50];
+
 int object_count = 0;
-
+//int count = 0;
 // Don't delete this please gamres
 // Sweeps for objects and returns an integer of the amount of objects detected
 void sweep(){
-    int count = 0;
+
+    servo_move(0);
+    timer_waitMillis(50);
+   // int count = 0;
     int degrees, start, finish, flag = 0;
     double ir, sonar;
-    double x_obj, y_obj;
+    double x_obj, y_obj, width;
     int i, mid_angle;
+   // int count = 0;
+
+
+    int robot_angle = get_robot_angle();
+    robot_angle += 90;
 
     for(i = 0; i < 181; i++){
-        degrees = i;
+        degrees = i - robot_angle;
         sonar = ping_getDistance();
         // specific to bot 6
         ir = pow(adc_avg_distance(), -.885) * 22239;
@@ -43,19 +52,22 @@ void sweep(){
             finish = degrees;
             flag = 0;
             // put in the struct given
-            mid_angle = (start + finish) / 2;
             object_position(mid_angle, sonar, &x_obj, &y_obj);
-            object[count+object_count].distance = sonar;
-            object[count+object_count].width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) - 3;
-            object[count+object_count].x = x_obj * -1;
-            object[count+object_count].y = y_obj+(object[count].width/2);
-            count++;
+            width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) -3;
+            //if (!check_existing_object(x_obj, ( y_obj+(width/2))*-1)){
+                mid_angle = (start + finish) / 2;
+                object[object_count].distance = sonar;
+                object[object_count].width = width;
+                object[object_count].x = x_obj; //*-1;
+                object[object_count].y =( y_obj+(object[object_count].width/2))*-1;
+                object_count++;
+           //}
         }
         servo_move(i);
 
     }
-
-    object_count += count;
+    //object_count;
+    //object_count += count;
 
 
 }
@@ -71,11 +83,11 @@ void get_object_info(double *x, double *y, double *width, int index){
     *width = object[index].width;
 }
 
-void add_object(double width)
-{ //Removed the x,y function parameters and moved robot x,y to being called in the function (Asa)
+
+void add_object(double width){ //Removed the x,y function parameters and moved robot x,y to being called in the function (Asa)
     double x,y;
     get_robot_position(&x,&y);
-    object_count += 1;
+
     object[object_count].x = x;
     object[object_count].y = y;
     object[object_count].width = width;
@@ -133,6 +145,7 @@ void add_object(double width)
         }
         object[object_count].width = 13;
     }
+    object_count += 1;
 }
 
 /*
@@ -141,14 +154,15 @@ void add_object(double width)
  * object is not in the array.
  */
 
-int check_existing_object(double x, double y, double width){
+int check_existing_object(double x, double y){
     int i;
 
     for(i = 0; i < object_count; i++){
-        if (abs(object[i].x - x) < 15 && abs(object[i].y - y) < 15 && abs(object[i].width - width) < 15){
+        if ((abs(object[i].x - x) < 8) && (abs(object[i].y - y) < 8)){
             return 1;
         }
     }
 
     return 0;
 }
+
