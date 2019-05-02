@@ -147,14 +147,36 @@ void get_commands(int *direction, double *angle, double *a_distance, double *b_d
 
     //find angle of the point
     double other_angle = atan2(y,x)*180/M_PI;
-
+    //quad1
+    /*
+    if(x > 0 && y > 0){
+        other_angle += 0;
+    }
+    //quad2
+    else if(x < 0 && y > 0){
+        other_angle += 180;
+    }
+    //quad3
+    else if(x < 0 && y < 0){
+        other_angle += 180;
+    }
+    //quad4
+    else if(x > 0 && y < 0){
+        other_angle += 360;
+    }
+    */
     //atan returns negatives, negatives are bad as we only want positive angles
+   /*
     if(other_angle < 0){
         other_angle += 360;
     }
-
+*/
     //determine if the robot needs to turn right or left and calculate angle
     //absolute value because direction takes care of negatives.
+    if(other_angle < 0){
+        other_angle = abs(other_angle)+180;
+    }
+
     if(robot_angle >= other_angle){
         *direction = 1;
         *angle = abs(robot_angle-other_angle);
@@ -174,7 +196,8 @@ void get_commands(int *direction, double *angle, double *a_distance, double *b_d
 */
 double min_angle(double object_width, double object_distance){
     //object width/2 = radius, adding the robot radius +5 cm to be safe
-    return atan((object_width/2+5+16.5)/object_distance)*180/M_PI;
+    return atan2((object_width/2+15+16.5),object_distance)*180/M_PI;
+    //return atan2(object_distance,(object_width/2+15+16.5))*180/M_PI;
 }
 
 /*

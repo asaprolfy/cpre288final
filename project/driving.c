@@ -33,7 +33,7 @@ double robot_y;
 void driver_main(){
    //fill_object_struct();
 
-    int step = 1;
+    int step = 3;
 
     //step to be chosen if need to drive between two objects
     if(step == 1){
@@ -50,14 +50,17 @@ void driver_main(){
         find_objects_in_view(&num_objects_in_view);
     }
     if(step == 3){
-        double x_obj, y_obj;
+        double x_obj, y_obj, width;
 
         int size = get_num_objects();
-
-        if(!drive_around_object(object[0].x, object[0].y, object[0].width)){
+        get_object_info(&x_obj, &y_obj, &width, size-1);
+        if(!drive_around_object(x_obj, y_obj, width)){
             return;
         }
     }
+
+
+
 
 }
 /*
@@ -84,9 +87,12 @@ void two_closest_objects(int *index1, int *index2){
 
 
     //finds indices of two smallest objeccts
-    for(i=0; i<size; ++i){
+    for(i=0; i<size; i++){
         get_object_info(&x, &y, &width, i);
 
+        if((width < .1) && (width > -.1)){
+            continue;
+        }
         distance = distance_between_points(robot_x, robot_y, x, y);
 
         if(distance < first){
@@ -207,14 +213,14 @@ bool drive_through_objects(int index1, int index2){
 
 
     oi_free(sensor_data);
-
+    /*
     double x, y, width = 0;
 
     double x10, y10, width10 = 0;
     int number_objects = get_num_objects();
-    get_object_info(&x, &y, &width, number_objects-1);
+    get_object_info(&x, &y, &width, index1);
 
-    get_object_info(&x10, &y10, &width10, number_objects-2);
+    get_object_info(&x10, &y10, &width10, index2);
 
     while(1){
         lcd_printf("angle1: %.1lf\ndistance1: %.1lf\ndistance2: %.1lf", drive_angle, distance1, distance2);
@@ -225,7 +231,7 @@ bool drive_through_objects(int index1, int index2){
         timer_waitMillis(5000);
     }
 
-
+    */
     return true;
 }
 /*
@@ -236,7 +242,7 @@ bool drive_through_objects(int index1, int index2){
 */
 bool drive_around_object(double x, double y, double width){
     get_robot_position(&robot_x, &robot_y);
-
+    double robot_angle = get_robot_angle();
 
     double distance = distance_between_points(x, y, robot_x, robot_y);
     double angle = min_angle(distance, width);
@@ -244,11 +250,21 @@ bool drive_around_object(double x, double y, double width){
     oi_t *sensor_data = oi_alloc();
     oi_init(sensor_data);
     //hard coded to turn left
-    turn_right(sensor_data, angle);
+
+    double turn_angle = robot_angle - angle;
+
+
+
+
+
+    turn_right(sensor_data, turn_angle);
     move_forward(sensor_data, distance + 10);
     if(!completed()){
-        oi_free(sensor_data);
-        return false;
+        turn_angle = angle - robot_angle;
+        turn_left(sensor_data, turn_angle);
+        move_forward(sensor_data, distance + 10);
+
+
     }
 
     oi_free(sensor_data);
