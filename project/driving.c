@@ -14,8 +14,8 @@
 * completed succesfully.
 */
 
-
-info object[50];
+volatile object_info object[50];
+//info object[50];
 info objects_in_view[20];
 //Global variables for robot_position
 double robot_x;
@@ -31,9 +31,9 @@ double robot_y;
 */
 
 void driver_main(){
-    fill_object_struct();
+   //fill_object_struct();
 
-    int step = 3;
+    int step = 1;
 
     //step to be chosen if need to drive between two objects
     if(step == 1){
@@ -69,7 +69,9 @@ void two_closest_objects(int *index1, int *index2){
     get_robot_position(&robot_x, &robot_y);
     int size = get_num_objects();
     int i;
-    double distance, first, second;
+    double distance, first, second, x, y, width;
+
+
     //first and second as really big
     first = 1000;
     second = 1000;
@@ -83,8 +85,9 @@ void two_closest_objects(int *index1, int *index2){
 
     //finds indices of two smallest objeccts
     for(i=0; i<size; ++i){
+        get_object_info(&x, &y, &width, i);
 
-        distance = distance_between_points(robot_x, robot_y, object[i].x, object[i].y);
+        distance = distance_between_points(robot_x, robot_y, x, y);
 
         if(distance < first){
             second = first;
@@ -153,11 +156,14 @@ bool drive_through_objects(int index1, int index2){
     double mid_x, mid_y, point_x, point_y;
     double drive_angle, distance1, distance2;
     int direction;
+    double x1, x2, y1, y2, width1, width2;
+    get_object_info(&x1, &y1, &width1, index1);
+    get_object_info(&x2, &y2, &width2, index2);
     // get postion of 2 closest objects
-    double x1 = object[index1].x;
-    double y1 = object[index1].y;
-    double x2 = object[index2].x;
-    double y2 = object[index2].y;
+   // double x1 = //object[index1].x;
+    //double y1 = //object[index1].y;
+    //double x2 = //object[index2].x;
+    //double y2 = //object[index2].y;
 
 
     midpoint(&mid_x, &mid_y, x1, y1, x2, y2);
@@ -169,7 +175,7 @@ bool drive_through_objects(int index1, int index2){
     //else the objects are on the right side
     if(direction){
         turn_right(sensor_data, drive_angle);
-        move_forward(sensor_data, distance1);
+        move_forward(sensor_data, distance1+10);
         //check to see if move forward succesfully
         if(!completed()){
             return false;
@@ -185,7 +191,7 @@ bool drive_through_objects(int index1, int index2){
     else{
 
         turn_left(sensor_data, drive_angle);
-        move_forward(sensor_data, distance1);
+        move_forward(sensor_data, distance1+10);
         //check to see if move forward succesfully
         if(!completed()){
             return false;
@@ -206,9 +212,9 @@ bool drive_through_objects(int index1, int index2){
 
     double x10, y10, width10 = 0;
     int number_objects = get_num_objects();
-    get_object_info(&x, &y, &width, number_objects);
+    get_object_info(&x, &y, &width, number_objects-1);
 
-    get_object_info(&x10, &y10, &width10, number_objects-1);
+    get_object_info(&x10, &y10, &width10, number_objects-2);
 
     while(1){
         lcd_printf("angle1: %.1lf\ndistance1: %.1lf\ndistance2: %.1lf", drive_angle, distance1, distance2);
