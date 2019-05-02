@@ -38,7 +38,7 @@ int checkCliffSensor(oi_t *sensor)
     boundary=cliffLeft;
     sense = 1;
 
-    /* 
+    /*
      * Sense descriptions
      * sense is so that the robot has a easy way to determine which sensor has been activated
      * A '1' indicates the left most sensor
