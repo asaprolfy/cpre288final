@@ -83,8 +83,7 @@ void move_forward(oi_t *sensor, int centimeters) //UPDATED to raw data
             break;
         }
 
-        isBoundaryOrCliff = checkCliffSensor(sensor);
-        if (isBoundaryOrCliff == 1)//We might need to seperate boundary and cliff???
+        if (checkCliffSensor(sensor))//We might need to seperate boundary and cliff???
         { // decides if the bot has found a hole in the floor or if it has found boundary tape
             move_backward(sensor, sum);
             sum *= -1;
