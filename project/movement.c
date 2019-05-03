@@ -59,27 +59,23 @@ void move_forward(oi_t *sensor, int centimeters) //UPDATED to raw data
         if (bumpL == 1)
         { // decides if the bot has hit something on its left so it responds by backing up and waiting for main logic
 
-            lcd_printf("object cm:%d\n", sum);
-            move_backward(sensor, 5);
-            sum -= 5;
-            sense = 5;
-            update_robot_position(sum + 5); //Compensates for the sum -=5 above
+            move_backward(sensor, sum);
+            update_robot_position(sum);
             add_object(13);
-            update_robot_position(-7); //Compensates for the update_robot_position above
+            update_robot_position(-sum);
+            sense = 5;
             completion = 0;
             break;
         }
 
         if (bumpR == 1)
         { // decides if the bot has hit something on its right so it responds by backing up and waiting for main logic
-            lcd_printf("object cm:%d\n", sum);
-            move_backward(sensor, 5);
-            sum -= 5;
-            sense = 6;
-            update_robot_position(sum + 5); //Compensates for the sum -=5 above
+            move_backward(sensor, sum);
+            update_robot_position(sum);
             add_object(13);
-            update_robot_position(-7); //Compensates for the update_robot_position above
-            completion = 0;
+            update_robot_position(-sum);
+            sense = 6;
+            completion=0;
             break;
         }
 
@@ -87,9 +83,6 @@ void move_forward(oi_t *sensor, int centimeters) //UPDATED to raw data
         if (isBoundaryOrCliff == 1)
         { // decides if the bot has found a hole in the floor or if it has found boundary tape
             move_backward(sensor, sum);
-            sum *= -1;
-            //turn right or left???????
-            update_robot_position(sum);
             completion = 0;
             break;
         }
@@ -148,7 +141,8 @@ void turn_left(oi_t *sensor, int degrees)
     oi_setWheels(100, -100); //Opposing directions allows the robot to just turn on its axis, lower values increase accuracy
 
     while ((left - sensor->leftEncoderCount) < ((-4.4355*degrees)+37.599) * -1)
-    { // Turns the robot until the angle has been met, the constant corrects the turns
+    { // Turns the robot until the angle has been met, the equation corrects the turns to the specific bot
+        //lcd_printf("raw:%d\ntarget:%lf",left - sensor->leftEncoderCount,(-4.2683 * degrees + 27.251) * -1); REMOVE?
         oi_update(sensor);
     }
     update_robot_angle(-degrees);
@@ -160,3 +154,6 @@ int completed()
 {
     return completion;
 }
+
+
+
