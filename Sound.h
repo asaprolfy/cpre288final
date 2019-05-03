@@ -2,7 +2,7 @@
  * sound.h
  *
  *  Created on: May 2, 2019
- *      Author: ericm
+ *      Author: nlwolf
  */
 
 #ifndef SOUND_H_
@@ -13,8 +13,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <open_interface.h>
-#include <inc/tm3c123gh6pm.h>
-#include "Timer.h"
+#include "timer.h"
 
 void play_song(void);
 
