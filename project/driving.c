@@ -33,7 +33,7 @@ double robot_y;
 void driver_main(){
    //fill_object_struct();
 
-    int step = 3;
+    int step = 4;
 
     //step to be chosen if need to drive between two objects
     if(step == 1){
@@ -57,6 +57,12 @@ void driver_main(){
         if(!drive_around_object(x_obj, y_obj, width)){
             return;
         }
+    }
+    if(step == 4){
+        while(1){
+
+        }
+
     }
 
 
@@ -85,7 +91,6 @@ void two_closest_objects(int *index1, int *index2){
         return;
     }
 
-
     //finds indices of two smallest objeccts
     for(i=0; i<size; i++){
         get_object_info(&x, &y, &width, i);
@@ -96,7 +101,7 @@ void two_closest_objects(int *index1, int *index2){
         distance = distance_between_points(robot_x, robot_y, x, y);
 
         if(distance < first){
-            second = first;
+            //second = first;
             first = distance;
             *index1 = i;
         }
@@ -165,6 +170,18 @@ bool drive_through_objects(int index1, int index2){
     double x1, x2, y1, y2, width1, width2;
     get_object_info(&x1, &y1, &width1, index1);
     get_object_info(&x2, &y2, &width2, index2);
+//    while(1){
+//
+        lcd_printf("%d: (%.1lf , %.1lf)\n%.1lf", index1, x1, y1, width1);
+        timer_waitMillis(5000);
+        lcd_printf("%d: (%.1lf , %.1lf)\n%.1lf", index2, x2, y2, width2);
+        timer_waitMillis(5000);
+//
+//    }
+
+
+
+
     // get postion of 2 closest objects
    // double x1 = //object[index1].x;
     //double y1 = //object[index1].y;
@@ -176,11 +193,13 @@ bool drive_through_objects(int index1, int index2){
     get_triangle(&point_x, &point_y, x1, y1, x2, y2);
     get_commands(&direction, &drive_angle, &distance1 ,&distance2, mid_x, mid_y, point_x, point_y);
 
+    //lcd_printf("angle1: %.1lf\ndistance1: %.1lf\ndistance2: %.1lf", drive_angle, distance1, distance2);
 
     //if direction is 1, the objects are on the left side of the robot
     //else the objects are on the right side
     if(direction){
         turn_right(sensor_data, drive_angle);
+
         move_forward(sensor_data, distance1+10);
         //check to see if move forward succesfully
         if(!completed()){
@@ -195,7 +214,6 @@ bool drive_through_objects(int index1, int index2){
         }
     }
     else{
-
         turn_left(sensor_data, drive_angle);
         move_forward(sensor_data, distance1+10);
         //check to see if move forward succesfully
@@ -213,7 +231,7 @@ bool drive_through_objects(int index1, int index2){
 
 
     oi_free(sensor_data);
-    /*
+
     double x, y, width = 0;
 
     double x10, y10, width10 = 0;
@@ -231,7 +249,7 @@ bool drive_through_objects(int index1, int index2){
         timer_waitMillis(5000);
     }
 
-    */
+
     return true;
 }
 /*
@@ -244,32 +262,71 @@ bool drive_around_object(double x, double y, double width){
     get_robot_position(&robot_x, &robot_y);
     double robot_angle = get_robot_angle();
 
-    double distance = distance_between_points(x, y, robot_x, robot_y);
-    double angle = min_angle(distance, width);
+
 
     oi_t *sensor_data = oi_alloc();
     oi_init(sensor_data);
     //hard coded to turn left
 
-    double turn_angle = robot_angle - angle;
+
+    double turn_angle, distance, x1, y1;
+    int direction, side = 1;
 
 
+    point_near_object(&x1, &y1, x, y, width, side);
 
+    drive_to_point(&direction, &distance, &turn_angle, x, y);
 
+    lcd_printf("turn %d\n %.1lf\n %.1lf\n", direction, distance, turn_angle);
 
-    turn_right(sensor_data, turn_angle);
-    move_forward(sensor_data, distance + 10);
-    if(!completed()){
-        turn_angle = angle - robot_angle;
+    timer_waitMillis(200);
+
+    //first try the right side
+    if(direction){
+        turn_right(sensor_data, turn_angle);
+        move_forward(sensor_data, distance + 10);
+        if(completed()){
+            return true;
+        }
+        turn_left(sensor_data, turn_angle);
+    }
+    else{
         turn_left(sensor_data, turn_angle);
         move_forward(sensor_data, distance + 10);
-
-
+        if(completed()){
+            return true;
+        }
+        turn_right(sensor_data, turn_angle);
     }
+
+    //if this fails we will try to turn left
+    point_near_object(&x1, &y1, x, y, width, 0);
+    drive_to_point(&direction, &distance, &turn_angle, x, y);
+
+    if(direction){
+        turn_right(sensor_data, turn_angle);
+        move_forward(sensor_data, distance + 10);
+        if(completed()){
+            return true;
+        }
+        turn_left(sensor_data, turn_angle);
+    }
+    else{
+        turn_left(sensor_data, turn_angle);
+        move_forward(sensor_data, distance + 10);
+        if(completed()){
+            return true;
+        }
+        turn_right(sensor_data, turn_angle);
+    }
+
+    turn_right(sensor_data, 180);
+
+
 
     oi_free(sensor_data);
 
-    return true;
+    return false;
 
 }
 
