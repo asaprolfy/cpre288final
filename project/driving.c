@@ -118,7 +118,6 @@ void driver_main(){
                 turn_left(sensor_data, 20);
             }
 */
-            oi_free(sensor_data);
 
         }
         //if one drive around it
@@ -128,6 +127,7 @@ void driver_main(){
             get_object_info(&x_obj, &y_obj, &width, indices_in_view[0] );
             lcd_printf("%d", indices_in_view[0]);
             if(!drive_around_object(x_obj, y_obj, width)){
+
                 return;
             }
         }
@@ -135,20 +135,30 @@ void driver_main(){
         if(objects_in_view >= 2){
             int index1, index2;
             //get the two closest objects
-
+            double x_obj, y_obj, width, x_obj1, y_obj1, width1;
             two_closest_objects(&index1, &index2);
 
             if(!drive_through_objects(index1, index2)){
+
                 return;
             }
+
+            get_object_info(&x_obj, &y_obj, &width, index1);
+            get_object_info(&x_obj1, &y_obj1, &width1, index2);
+            if(width1 < 7 && width < 7){
+                lcd_printf("Epic Gamer Win");
+                oi_init_noupdate();
+                //play_song();
+                while(1){
+                   play_song();
+                }
+            }
+
         }
 
-
-
-
-
     }
-    if(part== 2){
+
+    if(part == 2){
         oi_t *sensor= oi_alloc();
         oi_init(sensor);
         double small; //works as a temp variable
@@ -222,6 +232,29 @@ void driver_main(){
 
     }
 
+    if(part == 3){
+              oi_t *sensor_data = oi_alloc();
+              oi_init(sensor_data);
+
+              int direction;
+              double turning_angle, distance1;
+              //right
+              drive_to_point(&direction, &distance1, &turning_angle, 20, 20);
+              if(direction){
+                  turn_right(sensor_data,turning_angle);
+                  move_forward(sensor_data,distance1);
+              }
+              //left
+              else{
+                  turn_left(sensor_data,turning_angle);
+                  move_forward(sensor_data,distance1);
+              }
+
+              lcd_printf("%lf",get_robot_angle());
+              oi_free(sensor_data);
+
+    }
+
 
 }
 
@@ -248,8 +281,8 @@ void two_closest_objects(int *index1, int *index2){
     }
 
     //finds indices of two smallest objeccts
-    for(i=0; i<size/*get_indices()*/; i++){
-        get_object_info(&x, &y, &width, i/*indices_in_view[i]*/ ); //changed
+    for(i=0; i<get_indices(); i++){
+        get_object_info(&x, &y, &width, indices_in_view[i] ); //changed
 
         if((width < .1) && (width > -.1)){
             continue;
@@ -277,8 +310,9 @@ void two_closest_objects(int *index1, int *index2){
 void goal(double goalwidth, int index)
 {
     return; //TODO
-    if (goalwidth < 15)
+    if (goalwidth < 7)
     {
+        lcd_printf("FOUND TARGET");
         //Dont ever leave me
 
     }
@@ -373,9 +407,9 @@ bool drive_through_objects(int index1, int index2){
 //    while(1){
 //
         lcd_printf("%d: (%.1lf , %.1lf)\n%.1lf", index1, x1, y1, width1);
-        timer_waitMillis(2000);
+        timer_waitMillis(1000);
         lcd_printf("%d: (%.1lf , %.1lf)\n%.1lf", index2, x2, y2, width2);
-        timer_waitMillis(2000);
+        timer_waitMillis(1000);
 //
 //    }
 
@@ -406,7 +440,7 @@ bool drive_through_objects(int index1, int index2){
                 oi_free(sensor_data);
                 return false;
             }
-            turn_left(sensor_data, 95);
+            turn_left(sensor_data, 90);
             //moving an additional 5 so objects arent scanned again
             move_forward(sensor_data, distance2+15);
             //check to see if move forward succesfully
@@ -423,7 +457,7 @@ bool drive_through_objects(int index1, int index2){
                 oi_free(sensor_data);
                 return false;
             }
-            turn_right(sensor_data, 95);
+            turn_right(sensor_data, 90);
             //moving an additional 5 so objects arent scanned again
             move_forward(sensor_data, distance2+15);
             //check to see if move forward succesfully
@@ -443,7 +477,7 @@ bool drive_through_objects(int index1, int index2){
                 oi_free(sensor_data);
                 return false;
             }
-            turn_right(sensor_data, 95);
+            turn_right(sensor_data, 90);
             //moving an additional 5 so objects arent scanned again
             move_forward(sensor_data, distance2+15);
             //check to see if move forward succesfully
@@ -454,7 +488,7 @@ bool drive_through_objects(int index1, int index2){
         }
         else{
             turn_left(sensor_data, drive_angle);
-            move_forward(sensor_data, distance1+5);
+            move_forward(sensor_data, distance1+8);
             //check to see if move forward succesfully
             if(!completed()){
                 oi_free(sensor_data);
@@ -487,12 +521,12 @@ bool drive_through_objects(int index1, int index2){
     get_object_info(&x10, &y10, &width10, index2);
 
    // while(1){
-        lcd_printf("angle1: %.1lf\ndistance1: %.1lf\ndistance2: %.1lf", drive_angle, distance1, distance2);
-        timer_waitMillis(5000);
-        lcd_printf("%d: (%.1lf , %.1lf)\n%.1lf", number_objects, x, y, width);
-        timer_waitMillis(5000);
-        lcd_printf("%d: (%.1lf , %.1lf)\n%.1lf", number_objects-1, x10, y10, width10);
-        timer_waitMillis(5000);
+      //  lcd_printf("angle1: %.1lf\ndistance1: %.1lf\ndistance2: %.1lf", drive_angle, distance1, distance2);
+       // timer_waitMillis(5000);
+      //  lcd_printf("%d: (%.1lf , %.1lf)\n%.1lf", number_objects, x, y, width);
+        //timer_waitMillis(5000);
+      //  lcd_printf("%d: (%.1lf , %.1lf)\n%.1lf", number_objects-1, x10, y10, width10);
+       // timer_waitMillis(5000);
    // }
 
 
@@ -534,7 +568,7 @@ bool drive_around_object(double x, double y, double width){
         if(completed()){
             return true;
         }
-        turn_left(sensor_data, turn_angle);
+       // turn_left(sensor_data, turn_angle);
     }
     else{
         turn_left(sensor_data, turn_angle);
@@ -542,7 +576,7 @@ bool drive_around_object(double x, double y, double width){
         if(completed()){
             return true;
         }
-        turn_right(sensor_data, turn_angle);
+       // turn_right(sensor_data, turn_angle);
     }
 
     //if this fails we will try to turn left
@@ -556,7 +590,7 @@ bool drive_around_object(double x, double y, double width){
             oi_free(sensor_data);
             return true;
         }
-        turn_left(sensor_data, turn_angle);
+        //turn_left(sensor_data, turn_angle);
     }
     else{
         turn_left(sensor_data, turn_angle);
@@ -565,7 +599,7 @@ bool drive_around_object(double x, double y, double width){
             oi_free(sensor_data);
             return true;
         }
-        turn_right(sensor_data, turn_angle);
+        //turn_right(sensor_data, turn_angle);
     }
 
     turn_right(sensor_data, 180);
