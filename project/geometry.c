@@ -173,6 +173,8 @@ void get_commands(int *direction, double *angle, double *a_distance, double *b_d
 */
     //determine if the robot needs to turn right or left and calculate angle
     //absolute value because direction takes care of negatives.
+    //other_angle = ((int)other_angle + 360) % 360;
+
     if(other_angle < 0){
         other_angle = abs(other_angle)+180;
     }
