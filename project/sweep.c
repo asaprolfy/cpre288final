@@ -43,7 +43,7 @@ void sweep(){
         ir = pow(adc_avg_distance(), -.885) * 22239;
 
         // if there is something within range begin keeping track of degrees
-        if(abs(sonar-ir) < 20 && flag == 0 && sonar < 60){
+        if(abs(sonar-ir) < 20 && flag == 0 && sonar < 60 && i>5){
             flag = 1;
             start = degrees;
         }
@@ -52,16 +52,20 @@ void sweep(){
             finish = degrees;
             flag = 0;
             // put in the struct given
+            mid_angle = (start + finish) / 2;
             object_position(mid_angle, sonar, &x_obj, &y_obj);
             width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) -3;
-            //if (!check_existing_object(x_obj, ( y_obj+(width/2))*-1)){
-                mid_angle = (start + finish) / 2;
+            if (!check_existing_object(x_obj, ( y_obj+(width/2))*-1)){
+                //mid_angle = (start + finish) / 2;
+                //object_position(mid_angle, sonar, &x_obj, &y_obj);
+                //width = sqrt(2*pow(sonar,2)-2*pow(sonar,2)*cos((finish-start)*(M_PI/180))) -3;
+
                 object[object_count].distance = sonar;
                 object[object_count].width = width;
                 object[object_count].x = x_obj; //*-1;
                 object[object_count].y =( y_obj+(object[object_count].width/2))*-1;
                 object_count++;
-           //}
+          }
         }
         servo_move(i);
 
@@ -156,9 +160,11 @@ void add_object(double width){ //Removed the x,y function parameters and moved r
 
 int check_existing_object(double x, double y){
     int i;
-
+    if(object_count == 0){
+        return 0;
+    }
     for(i = 0; i < object_count; i++){
-        if ((abs(object[i].x - x) < 8) && (abs(object[i].y - y) < 8)){
+        if ((abs(object[i].x - x) < 15) && (abs(object[i].y - y) < 15)){
             return 1;
         }
     }
