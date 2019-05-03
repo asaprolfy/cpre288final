@@ -33,229 +33,72 @@ volatile int sense;
 */
 
 void driver_main(){
-    int part = 1;
-
-   //fill_object_struct();
-    /*
-    oi_t *sensor_data = oi_alloc();
-    oi_init(sensor_data);
 
     int objects_in_view = get_indices();
     lcd_printf("%d", objects_in_view);
 
-    move_forward(sensor_data, 50);
-    sweep();
+    //if zero, move forward
+    if(objects_in_view == 0){
+        oi_t *sensor_data = oi_alloc();
+        oi_init(sensor_data);
+       move_forward(sensor_data, 40);
+        while (!completed()) //If the robot still can not complete the commands above, the robot is trapped in the loop until it is able to finish
+        {
+            lcd_printf("not completed");
+            if (sense == 1 || sense == 2) //Direction allows us to see what direction the robot needs to turn
+            {
+                lcd_printf("turn_right");
+                turn_right(sensor_data, 20);
+                move_forward(sensor_data, 30);
+            }
+            else if(sense == 3 || sense == 4)
+            {
+                lcd_printf("turn_left");
+                turn_left(sensor_data, 20);
+                move_forward(sensor_data, 30);
+            }
+            else{
+                turn_right(sensor_data, 20);
+                move_forward(sensor_data, 30);
+            }
 
-    objects_in_view = get_indices();
-    lcd_printf("%d", objects_in_view);
-    timer_waitMillis(3000);
-    oi_free(sensor_data);
-
-    int i;
-    double x,y,width;
-    while(1){
-
-        int size = get_num_objects();
-        for(i=0; i < get_num_objects(); i++){
-
-            get_object_info(&x,&y,&width, i);
-            lcd_printf("%d %.1lf %.1lf",i, x, y);
-            timer_waitMillis(3000);
         }
     }
-    */
+    //if one drive around it
+    if(objects_in_view == 1){
+        double x_obj, y_obj, width;
 
-    if(part == 0){
-        int index1, index2;
-        //get the two closest objects
+        get_object_info(&x_obj, &y_obj, &width, indices_in_view[0] );
+        lcd_printf("%d", indices_in_view[0]);
+        if(!drive_around_object(x_obj, y_obj, width)){
 
-        two_closest_objects(&index1, &index2);
-
-        if(!drive_through_objects(index1, index2)){
             return;
         }
     }
+    //if two or more, drive through the closest 2
+    if(objects_in_view >= 2){
+        int index1, index2;
+        //get the two closest objects
+        double x_obj, y_obj, width, x_obj1, y_obj1, width1;
+        two_closest_objects(&index1, &index2);
 
+        if(!drive_through_objects(index1, index2)){
 
-    if(part == 1){
-        //oi_t *sensor_data = oi_alloc();
-       // oi_init(sensor_data);
-        int objects_in_view = get_indices();
-        lcd_printf("%d", objects_in_view);
-
-
-
-
-        //if zero, move forward
-        if(objects_in_view == 0){
-            oi_t *sensor_data = oi_alloc();
-            oi_init(sensor_data);
-           move_forward(sensor_data, 40);
-            while (!completed()) //If the robot still can not complete the commands above, the robot is trapped in the loop until it is able to finish
-            {
-                lcd_printf("not completed");
-                if (sense == 1 || sense == 2) //Direction allows us to see what direction the robot needs to turn
-                {
-                    lcd_printf("turn_right");
-                    turn_right(sensor_data, 20);
-                    move_forward(sensor_data, 30);
-                }
-                else if(sense == 3 || sense == 4)
-                {
-                    lcd_printf("turn_left");
-                    turn_left(sensor_data, 20);
-                    move_forward(sensor_data, 30);
-                }
-                else{
-                    turn_right(sensor_data, 20);
-                    move_forward(sensor_data, 30);
-                }
-
-            }
-            /*
-
-            if(!completed()){
-                turn_left(sensor_data, 20);
-            }
-*/
-
+            return;
         }
-        //if one drive around it
-        if(objects_in_view == 1){
-            double x_obj, y_obj, width;
 
-            get_object_info(&x_obj, &y_obj, &width, indices_in_view[0] );
-            lcd_printf("%d", indices_in_view[0]);
-            if(!drive_around_object(x_obj, y_obj, width)){
-
-                return;
+        get_object_info(&x_obj, &y_obj, &width, index1);
+        get_object_info(&x_obj1, &y_obj1, &width1, index2);
+        if(width1 < 7 && width < 7){
+            lcd_printf("Epic Gamer Win");
+            oi_init_noupdate();
+            //play_song();
+            while(1){
+               play_song();
             }
-        }
-        //if two or more, drive through the closest 2
-        if(objects_in_view >= 2){
-            int index1, index2;
-            //get the two closest objects
-            double x_obj, y_obj, width, x_obj1, y_obj1, width1;
-            two_closest_objects(&index1, &index2);
-
-            if(!drive_through_objects(index1, index2)){
-
-                return;
-            }
-
-            get_object_info(&x_obj, &y_obj, &width, index1);
-            get_object_info(&x_obj1, &y_obj1, &width1, index2);
-            if(width1 < 7 && width < 7){
-                lcd_printf("Epic Gamer Win");
-                oi_init_noupdate();
-                //play_song();
-                while(1){
-                   play_song();
-                }
-            }
-
         }
 
     }
-
-    if(part == 2){
-        oi_t *sensor= oi_alloc();
-        oi_init(sensor);
-        double small; //works as a temp variable
-            double smallest = 100; //Actuall smallest value from get_indices
-            int smallindex; //Would be equal to the smallest objects index value in the struct array
-            int index = 0;
-            int j = 0;
-            int i;
-            double x, y;
-            move_forward(sensor, 50); //moves forward a first time, gets intial data, Do sweep functions need to be here?
-            sweep();
-            index = get_indices(); //Maximum iteration size needed to find the smallest object in view
-            for (i = 0; i < index; ++i)
-            {
-                j = indices_in_view[i]; //Records the current index equivalent to the orginal struct array of object data
-                get_object_info(&x, &y, &small, j); //temp variable stores the current width value
-                if (smallest > small)
-                {
-                    smallest = small; //Replaces smallest with the actual smallest value seen
-                    smallindex = j; //Records the index of the original struct array for use in goal
-                }
-            }
-            goal(smallest, smallindex); //Decides if a possible goal has been found, if so becomes 'primary' logic
-            int index1, index2;
-
-            if (sense != 1 && sense != 2 && sense != 3 && sense != 4) //Checks to see if a boundary has been found, if not this happens
-            {
-                lcd_printf("Sense= 0");
-                if (j == 0) //If no objects are found nothing specially happens and the bot gets ready to move forward and scan again
-                {
-                    lcd_printf("j= 0");
-                    move_forward(sensor, 50);
-                    return;
-                }
-                else if (j == 1) //If 1 object is found the bot moves around the object and gets ready to move forward and scan agin
-                {
-                    lcd_printf("j= 1");
-                   drive_around_object(x,y,smallest);
-                }
-                else //If 2 or more objects are found, the bot finds the 2 closest objects and moves between them and then prepares to move forward and scan again
-                {
-                    lcd_printf("j= 2");
-                    two_closest_objects(&index1, &index2);
-                    drive_through_objects(index1, index2);
-                }
-
-            }
-            else //Happens if a boundary has been found
-            {
-
-                while (!completed()) //If the robot still can not complete the commands above, the robot is trapped in the loop until it is able to finish
-                {
-                    lcd_printf("not completed");
-                    if (sense == 1 || sense == 2) //Direction allows us to see what direction the robot needs to turn
-                    {
-                        lcd_printf("turn_right");
-                        turn_right(sensor, 20);
-                        move_forward(sensor, 50);
-                    }
-                    else if(sense == 3 || sense == 4)
-                    {
-                        lcd_printf("turn_left");
-                        turn_left(sensor, 20);
-                        move_forward(sensor, 50);
-                    }
-
-                }
-                sense = 0; //Resets sense so the robot can reset its logic
-
-            }
-
-    }
-
-    if(part == 3){
-              oi_t *sensor_data = oi_alloc();
-              oi_init(sensor_data);
-
-              int direction;
-              double turning_angle, distance1;
-              //right
-              drive_to_point(&direction, &distance1, &turning_angle, 20, 20);
-              if(direction){
-                  turn_right(sensor_data,turning_angle);
-                  move_forward(sensor_data,distance1);
-              }
-              //left
-              else{
-                  turn_left(sensor_data,turning_angle);
-                  move_forward(sensor_data,distance1);
-              }
-
-              lcd_printf("%lf",get_robot_angle());
-              oi_free(sensor_data);
-
-    }
-
-
 }
 
 /*
