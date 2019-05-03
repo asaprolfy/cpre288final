@@ -83,12 +83,13 @@ void move_forward(oi_t *sensor, int centimeters) //UPDATED to raw data
             break;
         }
 
-        if (checkCliffSensor(sensor))//We might need to seperate boundary and cliff???
+        isBoundaryOrCliff = checkCliffSensor(sensor);
+        if (isBoundaryOrCliff == 1)
         { // decides if the bot has found a hole in the floor or if it has found boundary tape
             move_backward(sensor, sum);
             sum *= -1;
+            //turn right or left???????
             update_robot_position(sum);
-            //turn right or left maybe???????
             completion = 0;
             break;
         }
@@ -148,7 +149,6 @@ void turn_left(oi_t *sensor, int degrees)
 
     while ((left - sensor->leftEncoderCount) < ((-4.4355*degrees)+37.599) * -1)
     { // Turns the robot until the angle has been met, the constant corrects the turns
-        lcd_printf("raw:%d\ntarget:%lf",left - sensor->leftEncoderCount,(-4.2683 * degrees + 27.251) * -1);
         oi_update(sensor);
     }
     update_robot_angle(-degrees);
@@ -160,4 +160,3 @@ int completed()
 {
     return completion;
 }
-
