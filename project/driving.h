@@ -11,7 +11,7 @@ typedef struct driving_objects{
 
 
 
-void driver_main();
+void driver_main(oi_t *sensor);
 
 bool drive_through_objects(int index1, int index2);
 
@@ -22,6 +22,10 @@ void two_closest_objects(int *index1, int *index2);
 void find_objects_in_view(int *number);
 
 bool drive_around_object(double x, double y, double width);
+
+int get_indices();
+
+void goal(double goalwidth, int index);
 
 
 
