@@ -21,6 +21,8 @@ info objects_in_view[20];
 double robot_x;
 double robot_y;
 
+int indices_in_view[50];
+
 
 /*
 * drives through two given objects in a safe way
@@ -34,6 +36,21 @@ void driver_main(){
    //fill_object_struct();
 
     int step = 4;
+
+    int objects_in_view = get_indices();
+
+
+    if(objects_in_view == 0){
+
+    }
+    if(objects_in_view == 1){
+
+    }
+    if(objects_in_view == 2){
+
+    }
+
+
 
     //step to be chosen if need to drive between two objects
     if(step == 1){
@@ -69,6 +86,7 @@ void driver_main(){
 
 
 }
+
 /*
 * returns the indices of the 2 closest objects to the robot
 * @ Author: Brandon Johnson
@@ -115,6 +133,35 @@ void two_closest_objects(int *index1, int *index2){
     }
 
 }
+
+int get_indices(){
+
+    int i;
+    double x, y, width;
+
+    //clear the index info
+    for(i = 0; i<50; i++){
+        indices_in_view[i] = 420;
+    }
+
+
+    int count = 0;
+    //add index if in view;
+    for(i=0; i<get_num_objects(); i++){
+
+        get_object_info(&x, &y, &width, i);
+
+        if(in_view(x,y)){
+            indices_in_view[count] = i;
+            count++;
+        }
+    }
+    return count;
+}
+
+
+
+
 
 /*
 * fills up drives struct with necessary
