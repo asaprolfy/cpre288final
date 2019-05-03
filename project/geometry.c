@@ -198,9 +198,80 @@ void get_commands(int *direction, double *angle, double *a_distance, double *b_d
 */
 double min_angle(double object_width, double object_distance){
     //object width/2 = radius, adding the robot radius +5 cm to be safe
-    return atan2((object_width/2+15+16.5),object_distance)*180/M_PI;
-    //return atan2(object_distance,(object_width/2+15+16.5))*180/M_PI;
+	double angle = atan2((object_width/2+5+16.5),object_distance)*180/M_PI;
+	//mapping atan2 to be 0-180 degrees.
+    angle = ((int)angle + 360) % 360;
+	return angle;
 }
+
+/*
+* Finds a the nearest point to an object that we would like the robot to drive around
+* this will be used in our drive around functio.
+* side = 1 means drive to the right, side = 0 means drive to the left
+* @Author: Brandon Johnson
+* @Date: 5/2/2019
+*/
+void point_near_object(double *x, double *y, double x_obj, double y_obj, double width, int side){
+	//find the angle of the object on our coord plane
+	double obj_angle = atan2(y_obj, x_obj)*180/M_PI;
+	obj_angle = (int)(obj_angle + 360) % 360;
+	printf("%.1lf\n", obj_angle);
+	double distance = distance_between_points(x_obj, y_obj, 0, 0);
+	
+	//find how much we should turn relative to the obj angle
+	double turn_angle = min_angle(width, distance);
+	
+	if(side == 1){
+		obj_angle = obj_angle - turn_angle; 
+	}
+	else{
+		obj_angle = turn_angle + obj_angle;		
+	}
+	printf("obj_angle: %.1lf\n", obj_angle);
+	//find coord of the point.
+	*x = distance*cos(obj_angle*M_PI/180);
+	*y = distance*sin(obj_angle*M_PI/180);
+	
+	return;
+}
+/*
+* gets the commands needed to drive around an object.
+* returns 1 if you need to turn right, returns 0 if left.
+* @Author: Brandon Johnson
+* @Date: 5/2/2019
+*/
+void drive_to_point(int *direction, double *length, double *angle, double x, double y){
+	get_robot_position(&robot_x, &robot_y);
+	double robot_angle = get_robot_angle();
+	
+	//finding the distance the robot needs to drive
+	*length = distance_between_points(robot_x, robot_y, x, y);
+	
+	//finding the position relative to the robot
+	//x = x-robot_x;
+    //y = y-robot_y;
+	
+	//finding the angle and mapping it 0-360 degrees.
+	*angle = atan2(y,x)*180/M_PI;
+	*angle = ((int)*angle + 360) % 360;
+	
+	//direction is 1 if it needs to turn right
+	//if 0 it needs to turn left
+	printf("%.1lf\n", *angle);
+	
+	if(robot_angle > *angle){
+		*direction = 1;
+		*angle = robot_angle - *angle;
+	}
+	else{
+		*direction = 0;
+		*angle = *angle - robot_angle;
+		
+	}	
+	
+	return;
+}
+
 
 /*
 * Given an objects x and y positions and the angle the robot is facing, returns wheter the object can be seen by the robot
