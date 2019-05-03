@@ -76,7 +76,10 @@ void play_song(void){
         for(j=0;j<4;j++){
         oi_loadSong(j,7,note_value[j+(i*4)],note_duration[j+(i*4)]);
         oi_play_song(j);
-        time_waitMillis(500);
+        timer_waitMillis(500);
+            if((i*4)+j>=9){
+            break;
+            }
         }
     }
     /*oi_loadSong(1,2,&e[0],&f[0]);
